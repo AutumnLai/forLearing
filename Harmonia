@@ -15,5 +15,5 @@ docker-compose --version
 
 docker-compose version 1.27.4, build 1110ad01
 
-https://docs.gitea.io/en-us/install-with-docker/
+
 https://github.com/ailabstw/harmonia/blob/master/docs/get-started/ch0-setup.md
