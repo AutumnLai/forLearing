@@ -18,9 +18,11 @@ docker-compose version 1.27.4, build 1110ad01
 wget gitea的yaml部屬
 進gitea然後開資料庫設定
 
+到github先下載zip
 wget makefile
 
-
+docker build examples/edge --tag <image_registry>/mnist-edge
+<image_registry要換
 
 https://github.com/ailabstw/harmonia/blob/master/docs/get-started/ch0-setup.md
  
