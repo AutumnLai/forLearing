@@ -26,3 +26,4 @@ docker build examples/edge --tag <image_registry>/mnist-edge
 
 https://github.com/ailabstw/harmonia/blob/master/docs/get-started/ch0-setup.md
  
+$ docker run -d -p 5000:5000 -v /home/user1/storage:/var/lib/registry --name registry registry:2
