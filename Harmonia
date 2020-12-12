@@ -1,29 +1,71 @@
-sudo apt-get update
-sudo apt-get upgrade -y
-sudo apt-get install docker.io -y
-sudo apt-get install python-pip python-dev -y
-sudo apt-get install libffi-dev -y
-sudo apt-get install openssl-dev -y
-sudo apt-get install gcc -y 
-sudo apt-get install libc-dev -y 
-sudo apt-get install make -y 
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
-
-/sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-docker-compose version 1.27.4, build 1110ad01
-
+使用kubeadm安裝，使用fannel或其他網路介面
+kubeadm init --apiserver-advertise-address=192.168.108.3 --pod-network-cidr=10.244.0.0/16
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f gitea_deployment.yml
+kubectl port-forward --address 0.0.0.0 service/harmonia-gitea 3000
+vi /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+Environment="KUBELET_EXTRA_ARGS=--node-ip=     "
 wget gitea的yaml部屬
+https://github.com/ailabstw/harmonia/blob/0.2/docs/get-started/ch1-federared-learning-setup.md
 進gitea然後開資料庫設定
+新增token 放入configs.yml
+kubectl apply -f configs.yml
+git clone  - - branch 0.2 https://github.com/ailabstw/harmonia.git
+make all
 
-到github先下載zip
-wget makefile
+vi /etc/docker/daemon.json
+{
+  "live-restore": true,
+  "group": "dockerroot",
+  "insecure-registries": ["192.168.182.134:5000"]
+}
+systemctl restart docker#work host 都要
 
+docker run -d -p 5000:5000 -v /home/user1/storage:/var/lib/registry --name registry registry:2
+https://ithelp.ithome.com.tw/articles/10191213
+
+
+
+docker tag harmonia/operator <image_registry>/harmonia/operator
+docker tag harmonia/fedavg  <image_registry>/harmonia/fedavg
 docker build examples/edge --tag <image_registry>/mnist-edge
-<image_registry要換
 
-https://github.com/ailabstw/harmonia/blob/master/docs/get-started/ch0-setup.md
+docker push <image_registry>/harmonia/operator
+docker push <image_registry>/harmonia/fedavg
+docker push <image_registry>/mnist-edge
+vi mnist-deployment.yml
+kubectl apply -f mnist-deployment.yml
+
+git clone http://127.0.0.1:3000/gitea/global-model.git
+pushd global-model
+
+git commit -m "pretrained model" --allow-empty
+git push origin master
+
+popd
+rm -rf global-model
+
+git clone http://127.0.0.1:3000/gitea/train-plan.git
+
+pushd train-plan
+cat > plan.json << EOF
+{
+    "name": "MNIST",
+    "round": 10,
+    "edge": 2,
+    "EpR": 1,
+    "pretrainedModel": "master"
+}
+EOF
+git add plan.json
+git commit -m "train plan commit"
+git push origin master
+
+popd
+rm -rf train-plan
+
+
+
+
  
-$ docker run -d -p 5000:5000 -v /home/user1/storage:/var/lib/registry --name registry registry:2
+
