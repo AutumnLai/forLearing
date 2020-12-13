@@ -1,16 +1,19 @@
 使用kubeadm安裝，使用fannel或其他網路介面
-kubeadm init --apiserver-advertise-address=192.168.108.3 --pod-network-cidr=10.244.0.0/16
+增加Hosts
+kubeadm init --apiserver-advertise-address=192.168.108.7 --pod-network-cidr=10.244.0.0/16
+kubectl get po -n kube-system
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f gitea_deployment.yml
 kubectl port-forward --address 0.0.0.0 service/harmonia-gitea 3000
 vi /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 Environment="KUBELET_EXTRA_ARGS=--node-ip=     "
+systemctl restart kubelet
 wget gitea的yaml部屬
 https://github.com/ailabstw/harmonia/blob/0.2/docs/get-started/ch1-federared-learning-setup.md
 進gitea然後開資料庫設定
 新增token 放入configs.yml
 kubectl apply -f configs.yml
-git clone  - - branch 0.2 https://github.com/ailabstw/harmonia.git
+git clone  --branch 0.2 https://github.com/ailabstw/harmonia.git
 make all
 
 vi /etc/docker/daemon.json
